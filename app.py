@@ -26,12 +26,50 @@ def home():
     muotoiltu_aika = suomi_time.strftime("%d.%m.%Y klo %H:%M:%S")
 
     return f"""
+    <!DOCTYPE html>
     <html>
-        <head><title>Uutta ja ihmeellistä</title></head>
-        <body>
-            <h1>Linux Administration, Tervetuloa toiselle sivulleni</h1>
-            <p>Kellonaika tietokannasta (Suomen aika): {muotoiltu_aika}</p>
-        </body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Uutta ja ihmeellistä</title>
+        <style>
+            body {{
+                background-color: #8A2BE2;
+                font-family: Arial, sans-serif;
+                color: white;
+                padding: 20px;
+            }}
+            h1 {{
+                color: #FFFF00;
+            }}
+            p {{
+                font-size: 18px;
+            }}
+            button {{
+                padding: 10px 20px;
+                font-size: 16px;
+                margin-top: 10px;
+                cursor: pointer;
+            }}
+        </style>
+    </head>
+    <body>
+        <h1>Linux Administration, Tervetuloa toiselle sivulleni</h1>
+        <p>Kellonaika tietokannasta (Suomen aika): {muotoiltu_aika}</p>
+
+        <h2>Noppapeli: Yritä saada kutonen!</h2>
+        <button onclick="heitäNoppa()">Heitä noppaa</button>
+        <p id="noppaTulos"></p>
+
+        <script>
+            function heitäNoppa() {{
+                const tulos = Math.floor(Math.random() * 6) + 1;
+                const viesti = tulos === 6
+                    ? "Onneksi olkoon! Sait kutosen, sinä voitit! "
+                    : "Sait " + tulos + "      Yritä uudelleen!";
+                document.getElementById("noppaTulos").textContent = viesti;
+            }}
+        </script>
+    </body>
     </html>
     """
 
