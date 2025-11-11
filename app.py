@@ -55,8 +55,8 @@ def home():
     <body>
         <h1>Linux Administration, Tervetuloa toiselle sivulleni</h1>
         <p>Kellonaika tietokannasta (Suomen aika): {muotoiltu_aika}</p>
-
-        <h2>Noppapeli: Yritä saada kutonen!</h2>
+	<h2>Tämä sivu toimii Flask-sovelluksena. Flask-sovellus on asetettu toimimaan Nginx-reverse proxyn takana.</h2>
+        <h3>Noppapeli: Yritä saada kutonen!</h3>
         <button onclick="heitäNoppa()">Heitä noppaa</button>
         <p id="noppaTulos"></p>
 
