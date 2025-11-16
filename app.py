@@ -58,6 +58,7 @@ def home():
         <button onclick="heitäNoppa()">Heitä noppaa</button>
         <p id="noppaTulos"></p>
 
+
         <script>
             function heitäNoppa() {{
                 const tulos = Math.floor(Math.random() * 6) + 1;
