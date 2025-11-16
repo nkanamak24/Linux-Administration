@@ -9,7 +9,7 @@ def home():
     conn = mysql.connector.connect(
         host="localhost",
         user="esimerkkikäyttäjä",
-        password="salasana",
+        password="1234",
         database="esimerkkidb"
     )
     cursor = conn.cursor()
@@ -18,11 +18,9 @@ def home():
     cursor.close()
     conn.close()
 
-    # Muunna UTC -> Suomen aika (talviaika oletuksena)
     utc_time = result[0]
     suomi_time = utc_time + timedelta(hours=2)
 
-    # Muotoile päivämäärä suomalaiseen muotoon: pp.kk.vvvv klo hh:mm:ss
     muotoiltu_aika = suomi_time.strftime("%d.%m.%Y klo %H:%M:%S")
 
     return f"""
