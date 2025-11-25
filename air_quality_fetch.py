@@ -71,7 +71,7 @@ url = (
         conn = mysql.connector.connect(
             host="localhost",
             user="esimerkkikäyttäjä",
-            password="Tämä_on_hyvä_salasana2",
+            password="1234",
             database="weather_db",
             autocommit=True
         )
