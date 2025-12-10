@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Linux Administration Kube</title>
+  <!-- CSS: palvellaan /kube/static/main.css -->
+</head>
+<body>
+  <h1>Linux Administration Kube</h1>
+
+  <form id="msgForm">
+    <input id="messageInput" name="text" type="text" placeholder="Kirjoita viesti">
+    <button type="submit">Tallenna</button>
+  </form>
+
+  <div class="btnbar">
+    <button id="btn-health">Check Backend Health</button>
+    <button id="btn-init">Initialize Database</button>
+    <button id="btn-get">Get Messages</button>
+  </div>
+
+  <pre id="result"></pre>
+
+  <script>
+    const BASE = '/kube';
+    const API  = `${BASE}/api`;
+
+    const resultEl   = document.getElementById('result');
+    const inputEl    = document.getElementById('messageInput');
+    const showResult = (data) => resultEl.textContent = JSON.stringify(data, null, 2);
+    const showError  = (err)  => resultEl.textContent = 'Error: ' + String(err);
+
+    async function callApi(path, options) {
+      const resp = await fetch(path, options || {});
+      const ct = resp.headers.get('content-type') || '';
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`HTTP ${resp.status} ${resp.statusText} — ${text}`);
+      }
+      if (ct.includes('application/json')) {
+        return await resp.json();
+      } else {
+        const text = await resp.text();
+        try { return JSON.parse(text); } catch { return { raw: text }; }
+      }
+    }
+
+    // Health (GET)
+    document.getElementById('btn-health').onclick = async () => {
+      try { showResult(await callApi(`${API}/health`)); } catch(e){ showError(e); }
+    };
+
+    // Init DB (POST)
+    document.getElementById('btn-init').onclick = async () => {
+      try {
+        const data = await callApi(`${API}/init-db`, {
+          method: 'POST',
+          headers: { 'Accept':'application/json' }
+        });
+        showResult(data);
+      } catch(e){ showError(e); }
+    };
+
+    // Get messages (GET)
+    document.getElementById('btn-get').onclick = async () => {
+      try { showResult(await callApi(`${API}/messages`)); } catch(e){ showError(e); }
+    };
+
+    // Save message (POST JSON)
+    document.getElementById('msgForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = (inputEl.value || '').trim();
+      if (!text) { showError('Viesti puuttuu'); return; }
+      try {
+        const data = await callApi(`${API}/messages`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text })
+        });
+        showResult(data);
+        inputEl.value = '';
+      } catch(e){ showError(e); }
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 720px; margin: 2rem auto; padding: 0 1rem;
+    }
+    form { display: flex; gap: .5rem; }
+    input[name="text"] { flex: 1; padding: .5rem; }
+    button { padding: .5rem 1rem; }
+    .btnbar { margin-top: 1rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+    pre#result {
+      background:#f7f7f7; border:1px solid #ddd; padding:.75rem;
+      border-radius:.25rem; margin-top:.5rem; white-space: pre-wrap;
+    }
+  </style>
+</body>
+</html>
