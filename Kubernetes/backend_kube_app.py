@@ -39,11 +39,11 @@ def fmt_local(dt_utc):
 # --------------------------
 BASE_PATH = os.getenv("BASE_PATH", "/kube")
 
-DB_HOST = os.getenv("DB_HOST", "mysql-svc")  # oletus Service-nimi
+DB_HOST = os.getenv("DB_HOST", "mysql-svc")
 DB_PORT = int(os.getenv("DB_PORT", "3306"))
 DB_NAME = os.getenv("DB_NAME", "appdb")
 DB_USER = os.getenv("DB_USER", "esimerkkikayttaja")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "changeme")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "1234")
 
 
 # --------------------------
@@ -263,14 +263,12 @@ def root_redirect():
 # JSON API -reitit
 # --------------------------
 
-# Terveyspolku kahdella reitillä: ilman BASE_PATH (probe) ja BASE_PATH:in kanssa (frontend)
 @app.route("/api/health", methods=["GET"])
 @app.route(f"{BASE_PATH}/api/health", methods=["GET"])
 def api_health():
     return jsonify({"status": "healthy"}), 200
 
 
-# Init DB: POST (ei GET) – jotta frontendin POST ei tuota 405:ttä
 @app.route("/api/init-db", methods=["POST"])
 @app.route(f"{BASE_PATH}/api/init-db", methods=["POST"])
 def api_init_db():
@@ -289,7 +287,6 @@ def api_init_db():
             pass
 
 
-# Messages: GET (listaa) ja POST (tallenna) samassa reitissä
 @app.route("/api/messages", methods=["GET", "POST"])
 @app.route(f"{BASE_PATH}/api/messages", methods=["GET", "POST"])
 def api_messages():
@@ -314,7 +311,6 @@ def api_messages():
 
             return jsonify(rows), 200
 
-        # POST: tallenna
         data = request.get_json(silent=True) or {}
         content = (data.get("text") or "").strip()
         if not content:
@@ -340,7 +336,6 @@ def api_messages():
             pass
 
 
-# Yhteensopivuus: vanha polku käyttää samaa POST-logiikkaa kuin /api/messages
 @app.route(f"{BASE_PATH}/api/save-message", methods=["POST"])
 def api_save_message():
     return api_messages()
@@ -361,5 +356,4 @@ def api_db_status():
 # Main
 # --------------------------
 if __name__ == "__main__":
-    # pysytään 8080:ssa, koska backend.yaml odottaa tätä
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", "8080")))
