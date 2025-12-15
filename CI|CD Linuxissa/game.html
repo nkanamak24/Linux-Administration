@@ -1,0 +1,69 @@
+
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Ristinolla</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #board { display: grid; grid-template-columns: repeat(3, 60px); gap: 6px; }
+    #board button { width: 60px; height: 60px; font-size: 24px; }
+  </style>
+</head>
+<body>
+  <h2>Ristinolla</h2>
+  <div id="board"></div>
+  <p id="status"></p>
+  <button onclick="reset()">Nollaa</button>
+  <script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    let cells = Array(9).fill('');
+    let player = 'X';
+    let over = false;
+
+    function render(){
+      board.innerHTML = '';
+      cells.forEach((v,i)=>{
+        const btn = document.createElement('button');
+        btn.textContent = v;
+        btn.disabled = !!v || over;
+
+btn.onclick = ()=>{
+          if(!cells[i] && !over){
+            cells[i] = player;
+            if(check()){
+              status.textContent = 'Voittaja: ' + player;
+              over = true;
+            } else if (cells.every(c => c)) {
+              status.textContent = 'Tasapeli';
+              over = true;
+            } else {
+              player = (player === 'X') ? 'O' : 'X';
+              status.textContent = 'Vuoro: ' + player;
+            }
+            render();
+          }
+        };
+        board.appendChild(btn);
+      });
+    }
+
+    function check(){
+      const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return lines.some(([a,b,c]) => cells[a] && cells[a] === cells[b] && cells[b] === cells[c]);
+    }
+
+    function reset(){
+      cells = Array(9).fill('');
+      player = 'X';
+      over = false;
+
+status.textContent = 'Vuoro: ' + player;
+      render();
+    }
+
+    reset();
+  </script>
+</body>
+</html>
